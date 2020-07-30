@@ -165,7 +165,7 @@ def assign_tag(api: sly.Api, task_id, context, state, app_logger):
 @sly.timeit
 def assign_tag_catalog(api: sly.Api, task_id, context, state, app_logger):
     user_id = context["userId"]
-    selected_upc = state["user2selectedRowData"][user_id]['UPC CODE']
+    selected_upc = state["user2selectedRowData"][str(user_id)]['UPC CODE']
     _assign_tag(api, context, selected_upc)
 
 def _multi_assign_tag(api, context, selected_upc):
@@ -204,7 +204,7 @@ def multi_assign_tag(api: sly.Api, task_id, context, state, app_logger):
 @sly.timeit
 def multi_assign_tag_catalog(api: sly.Api, task_id, context, state, app_logger):
     user_id = context["userId"]
-    selected_upc = state["user2selectedRowData"][user_id]['UPC CODE']
+    selected_upc = state["user2selectedRowData"][str(user_id)]['UPC CODE']
     _multi_assign_tag(api, context, selected_upc)
 
 
