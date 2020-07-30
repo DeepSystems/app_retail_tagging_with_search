@@ -298,7 +298,7 @@ def init_search_catalog():
 
         # skip upc code
         else:
-            info["image"] = ""
+            new_info["image"] = ""
         full_catalog.append(new_info)
 
 
