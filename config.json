@@ -1,5 +1,5 @@
 {
-	"name": "Retail objects tagging with search",
+	"name": "Retail objects tagging with search2",
 	"description": "Retail objects tagging (multi-user scenario)",
 	"init_script": "src/main.py",
 	"docker_image": "docker.deepsystems.io/supervisely/five/python-runner:apps"
