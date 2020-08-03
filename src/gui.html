@@ -120,12 +120,43 @@
                              :auto-reset="true"
                              :content="data.upcGallery[state.user2selectedRowData[context.userId]['UPC CODE']]"/>
             </el-tab-pane>
-            <el-tab-pane label="Debug">
-                <br/><br/><br/>
-                <pre>{{ state.user2selectedRowData[context.userId] }}</pre>
-                <pre>{{ state.user2selectedRowData[context.userId]["UPC CODE"] }}</pre>
-                <pre>{{ data.upcGallery[state.user2selectedRowData[context.userId]['UPC CODE']] }}</pre>
+<!--            <el-tab-pane label="Debug">-->
+<!--                <br/><br/><br/>-->
+<!--                <pre>{{ state.user2selectedRowData[context.userId] }}</pre>-->
+<!--                <pre>{{ state.user2selectedRowData[context.userId]["UPC CODE"] }}</pre>-->
+<!--                <pre>{{ data.upcGallery[state.user2selectedRowData[context.userId]['UPC CODE']] }}</pre>-->
+<!--            </el-tab-pane>-->
+            <el-tab-pane label="Review">
+                <div style="z-index:999; position: fixed; background: white; width: 100%; padding: 8px 0;">
+                    <el-button @click="command('prev_object')"
+                               icon="arrow-left"
+                               size="small"
+                               style="margin-left: 10px;">
+                        Prev Object
+                    </el-button>
+                    <el-button @click="command('next_object')"
+                               size="small"
+                               style="margin-left: 10px;">
+                        Next Object<i class="el-icon-arrow-right el-icon-right"></i>
+                    </el-button>
+                    <el-button @click="command('refresh_upc')"
+                               :disabled="context.figureId === null"
+                               size="small"
+                               style="margin-left: 10px;">
+                        <i class="zmdi zmdi-refresh"/> Refresh UPC
+                    </el-button>
+                </div>
+                <sly-gallery height="300px"
+                             style="margin-top: 50px; padding-top: 50px;"
+                             :auto-reset="true"
+                             :content="data.upcGallery[data.user2figureUpc[context.userId]]"/>
             </el-tab-pane>
+<!--            <el-tab-pane label="Debug">-->
+<!--                <br/><br/><br/>-->
+<!--                <pre>{{ context.userId }}</pre>-->
+<!--                <pre>{{ data.user2figureUpc[context.userId] }}</pre>-->
+<!--                <pre>{{ data.upcGallery[data.user2figureUpc[context.userId]] }}</pre>-->
+<!--            </el-tab-pane>-->
         </el-tabs>
     </div>
     <div v-if="!(context.userId in data.user2upc)">
