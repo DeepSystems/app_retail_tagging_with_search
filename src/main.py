@@ -6,6 +6,7 @@ from collections import defaultdict
 from pandas import read_excel
 import numpy as np
 import supervisely_lib as sly
+import time
 
 my_app = sly.AppService()
 
@@ -128,11 +129,14 @@ def select_object(api: sly.Api, task_id, context, find_func, show_msg=False):
         api.img_ann_tool.set_figure(ann_tool_session, active_figure_id)
         api.img_ann_tool.zoom_to_figure(ann_tool_session, active_figure_id, 2)
 
+    return active_figure_id
+
 
 @my_app.callback("prev_object")
 @sly.timeit
 def prev_object(api: sly.Api, task_id, context, state, app_logger):
-    select_object(api, task_id, context, get_prev_id)
+    active_figure_id = select_object(api, task_id, context, get_prev_id)
+    context["figureId"] = active_figure_id
     _refresh_upc(api, task_id, context, state, app_logger)
 
 def _refresh_upc(api: sly.Api, task_id, context, state, app_logger):
@@ -164,8 +168,10 @@ def refresh_upc(api: sly.Api, task_id, context, state, app_logger):
 @my_app.callback("next_object")
 @sly.timeit
 def next_object(api: sly.Api, task_id, context, state, app_logger):
-    select_object(api, task_id, context, get_next_id, show_msg=True)
+    active_figure_id = select_object(api, task_id, context, get_next_id, show_msg=True)
+    context["figureId"] = active_figure_id
     _refresh_upc(api, task_id, context, state, app_logger)
+
 
 def add_tag_to_object(api, project_meta, figure_id, tag_meta_id, value, remove_duplicates=True):
     tags_json = api.advanced.get_object_tags(figure_id)
