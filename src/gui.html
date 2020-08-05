@@ -10,7 +10,6 @@
             }
         </sly-style>
 
-
         <el-tabs type="card">
             <el-tab-pane label="Catalog">
                 <div v-if="context.userId in data.user2upc">
@@ -65,16 +64,6 @@
                     <div>User with id = {{context.userId}} is not allowed for UPC batches</div>
                 </div>
 
-
-                <el-dialog
-                  :visible.sync="state.dialogVisible"
-                  size="tiny"
-                  title="Image Done">
-                  <span>All objects are viewed. Move to next image</span>
-                  <span class="dialog-footer" slot="footer">
-                    <el-button @click="state.dialogVisible = false" type="primary">Confirm</el-button>
-                  </span>
-                </el-dialog>
             </el-tab-pane>
             <el-tab-pane label="UPC Info">
                 <br/>
@@ -106,10 +95,8 @@
                            :content="data.fullCatalog"></sly-table>
             </el-tab-pane>
             <el-tab-pane label="Search gallery">
-<!--                <pre>{{ state.selectedRowData }}</pre>-->
-<!--                <pre>{{ state.selectedRowData["UPC CODE"] }}</pre>-->
-<!--                <pre>{{ data.upcGallery[state.selectedRowData['UPC CODE']] }}</pre>-->
-                <div style="z-index:999; position: fixed; background: white; width: 100%; padding: 8px 0;">
+                <div style="background: white; width: 100%; margin-top: 42px; padding: 8px 0;">
+<!--                <div style="z-index:999; position: fixed; background: white; width: 100%; padding: 8px 0;">-->
                     <el-button @click="command('prev_object')"
                                icon="arrow-left"
                                size="small"
@@ -135,19 +122,12 @@
                         Multi assign
                     </el-button>
                 </div>
-                <sly-gallery height="300px"
-                             style="margin-top: 50px; padding-top: 50px;"
-                             :auto-reset="true"
+                <sly-gallery height="300px" :auto-reset="true"
                              :content="data.upcGallery[state.user2selectedRowData[context.userId]['UPC CODE']]"/>
             </el-tab-pane>
-<!--            <el-tab-pane label="Debug">-->
-<!--                <br/><br/><br/>-->
-<!--                <pre>{{ state.user2selectedRowData[context.userId] }}</pre>-->
-<!--                <pre>{{ state.user2selectedRowData[context.userId]["UPC CODE"] }}</pre>-->
-<!--                <pre>{{ data.upcGallery[state.user2selectedRowData[context.userId]['UPC CODE']] }}</pre>-->
-<!--            </el-tab-pane>-->
             <el-tab-pane label="Review">
-                <div style="z-index:999; position: fixed; background: white; width: 100%; padding: 8px 0;">
+                <div style="background: white; width: 100%; margin-top: 42px; padding: 8px 0;">
+<!--                <div style="z-index:999; position: fixed; background: white; width: 100%; padding: 8px 0;">-->
                     <el-button @click="command('prev_object')"
                                icon="arrow-left"
                                size="small"
@@ -164,11 +144,15 @@
                                style="margin-left: 10px;">
                         <i class="zmdi zmdi-refresh"/> Refresh UPC
                     </el-button>
+                    <el-button @click="command('mark_as_error')"
+                               size="small"
+                               style="margin-left: 10px; color: red;">
+                        <i class="zmdi zmdi-alert-circle"/> Error
+                    </el-button>
                 </div>
-                <sly-gallery height="300px"
-                             style="margin-top: 50px; padding-top: 50px;"
-                             :auto-reset="true"
-                             :content="data.upcGallery[data.user2figureUpc[context.userId]]"/>
+                <sly-gallery height="300px" :auto-reset="true"
+                             :content="data.upcGallery[data.user2figureUpc[context.userId]]">
+                </sly-gallery>
             </el-tab-pane>
 <!--            <el-tab-pane label="Debug">-->
 <!--                <br/><br/><br/>-->
@@ -178,6 +162,17 @@
 <!--            </el-tab-pane>-->
         </el-tabs>
     </div>
+
+    <el-dialog
+      :visible.sync="state.dialogVisible"
+      size="tiny"
+      title="Image Done">
+      <span>All objects are viewed. Move to next image</span>
+      <span class="dialog-footer" slot="footer">
+        <el-button @click="state.dialogVisible = false" type="primary">Confirm</el-button>
+      </span>
+    </el-dialog>
+
 <!--    <div v-if="!(context.userId in data.user2upc)">-->
 <!--        <div>User with id = {{context.userId}} is not allowed for this app</div>-->
 <!--    </div>-->

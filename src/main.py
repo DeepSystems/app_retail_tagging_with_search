@@ -20,6 +20,8 @@ FNAME_RES_USER_UPC_BATCHES = "res_user_upc_batches.json"
 FNAME_CATALOG = "product_catalog.xlsx"
 TAG_NAME = 'UPC CODE'
 
+ERROR_TAG_NAME = "error"
+
 PRODUCT_CLASS_NAME = "Product"
 
 user2upc = defaultdict(list)
@@ -62,11 +64,19 @@ def get_project_meta(api: sly.Api, project_id, force=False):
         meta_json = api.project.get_meta(project_id)
         meta = sly.ProjectMeta.from_json(meta_json)
 
+        update_meta = False
         upc_tag_meta = meta.get_tag_meta(TAG_NAME)
         if upc_tag_meta is None:
             meta = meta.add_tag_meta(sly.TagMeta(TAG_NAME, sly.TagValueType.ANY_STRING))
-            api.project.update_meta(project_id, meta.to_json())
+            update_meta = True
 
+        error_tag_meta = meta.get_tag_meta(ERROR_TAG_NAME)
+        if error_tag_meta is None:
+            meta = meta.add_tag_meta(sly.TagMeta(ERROR_TAG_NAME, sly.TagValueType.NONE, color=[255, 0, 0]))
+            update_meta = True
+
+        if update_meta is True:
+            api.project.update_meta(project_id, meta.to_json())
             # get meta from server again to access tag_id (tag_meta_id)
             meta_json = api.project.get_meta(project_id)
             meta = sly.ProjectMeta.from_json(meta_json)
@@ -143,7 +153,9 @@ def _refresh_upc(api: sly.Api, task_id, context, state, app_logger):
     user_id = context["userId"]
     figure_id = context["figureId"]
     if figure_id is None:
-        app_logger.warning("Can not refresh figure UPC. FigureId is None")
+        #app_logger.warning("Can not refresh figure UPC. FigureId is None")
+        api.app.set_field(task_id, "data.user2figureUpc", {user_id: None}, append=True)
+        return
 
     project_id = context["projectId"]
     project_meta = get_project_meta(api, project_id, force=False)
@@ -184,20 +196,20 @@ def add_tag_to_object(api, project_meta, figure_id, tag_meta_id, value, remove_d
 
     api.advanced.add_tag_to_object(tag_meta_id, figure_id, value=value)
 
-def _assign_tag(api, context, selected_upc):
+def _assign_tag(api, context, selected_upc, tag_name=None):
     project_id = context["projectId"]
     meta = get_project_meta(api, project_id)
 
     active_figure_id = context["figureId"]
     if active_figure_id is None:
         sly.logger.warn("Figure is not selected.")
+        return
 
-    tag_meta = meta.get_tag_meta(TAG_NAME)
+    if tag_name is None:
+        tag_name = TAG_NAME
+    tag_meta = meta.get_tag_meta(tag_name)
     #api.advanced.add_tag_to_object(tag_meta.sly_id, active_figure_id, value=selected_upc)
     add_tag_to_object(api, meta, active_figure_id, tag_meta.sly_id, selected_upc)
-
-
-
 
 @my_app.callback("assign_tag")
 @sly.timeit
@@ -224,6 +236,7 @@ def _multi_assign_tag(api, context, selected_upc):
     active_figure_id = context["figureId"]
     if active_figure_id is None:
         sly.logger.warn("Figure is not selected.")
+        return
 
     ann = get_annotation(api, project_id, image_id, active_figure_id)
     selected_label = None
@@ -257,6 +270,16 @@ def multi_assign_tag_catalog(api: sly.Api, task_id, context, state, app_logger):
     selected_upc = state["user2selectedRowData"][str(user_id)]['UPC CODE']
     _multi_assign_tag(api, context, selected_upc)
 
+@my_app.callback("mark_as_error")
+@sly.timeit
+def mark_as_error(api: sly.Api, task_id, context, state, app_logger):
+    user_id = context["userId"]
+    _assign_tag(api, context, None, tag_name=ERROR_TAG_NAME)
+
+@my_app.callback("manual_selected_figure_changed")
+@sly.timeit
+def manual_selected_figure_changed(api: sly.Api, task_id, context, state, app_logger):
+    _refresh_upc(api, task_id, context, state, app_logger)
 
 def download_remote_files(api, team_id):
     sly.fs.ensure_base_path(LOCAL_DIRECTORY_PATH)
@@ -280,7 +303,7 @@ def init_user_2_upc(api, team_id):
             team_info = api.team.get_info_by_id(team_id)
             raise RuntimeError("User {!r} no found in team {!r}".format(user, team_info.name))
         for batch_id in upc_batches:
-            for upc_code in upc_batch[str(batch_id)]:
+            for upc_code in upc_batch[str(batch_id)]["upcs"]:
                 first_url = True
                 for url in upc_url[upc_code]:
                     upc_gallery[upc_code].append([url])
