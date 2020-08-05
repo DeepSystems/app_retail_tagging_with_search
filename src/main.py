@@ -358,9 +358,16 @@ def main():
 
     user2selectedRowData = {}
     user2figureUpc = {}
-    for key, _ in user2upc.items():
-        user2selectedRowData[key] = full_catalog[0]
-        user2figureUpc[key] = None
+    members = api.user.get_team_members(team_id)
+    for m in members:
+        user2selectedRowData[str(m.id)] = full_catalog[0]
+        user2figureUpc[str(m.id)] = None
+
+    # user2selectedRowData = {}
+    # user2figureUpc = {}
+    # for key, _ in user2upc.items():
+    #     user2selectedRowData[key] = full_catalog[0]
+    #     user2figureUpc[key] = None
 
     data = {
         "user2upc": user2upc,

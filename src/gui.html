@@ -1,5 +1,6 @@
 <div id="app_retail_tagging">
-    <div v-if="context.userId in data.user2upc">
+<!--    <div v-if="context.userId in data.user2upc">-->
+    <div>
         <sly-style>
             #app_retail_tagging .el-tabs__header {
                 background: white;
@@ -12,7 +13,8 @@
 
         <el-tabs type="card">
             <el-tab-pane label="Catalog">
-                <div style="position: fixed; background: white; width: 100%; padding: 8px 0; margin-top: 42px;">
+                <div v-if="context.userId in data.user2upc">
+                    <div style="position: fixed; background: white; width: 100%; padding: 8px 0; margin-top: 42px;">
                     <el-button @click="command('prev_object')"
                                icon="arrow-left"
                                size="small"
@@ -38,23 +40,31 @@
                         Multi assign
                     </el-button>
                 </div>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <hr style="height: 1px; color: #e0e0e0; background-color: #e0e0e0; border: none;"/>
 
-                <br/>
-                <br/>
-                <hr style="height: 1px; color: #e0e0e0; background-color: #e0e0e0; border: none;"/>
-
-                <div style="margin: 10px;">
-                    <div v-for="(item, index) in data.user2upc[context.userId]">
-                        <div :style="{ borderColor: state.user2selectedUpc[context.userId] === index ? '#20A0FF' : 'transparent' }"
-                         style="float: left; width: 47%; border: 3px solid transparent;">
-                            <h2 style="margin: 10px; text-align: center;">UPC Code: {{item.upc}}</h2>
-                            <img :src="item.image_url"
-                                 @click="state.user2selectedUpc[context.userId] = index"
-                                 style="display: block; width: 100%; object-fit: contain; background: white;"
-                            />
+                    <div style="margin: 10px;">
+                        <div v-for="(item, index) in data.user2upc[context.userId]">
+                            <div :style="{ borderColor: state.user2selectedUpc[context.userId] === index ? '#20A0FF' : 'transparent' }"
+                             style="float: left; width: 47%; border: 3px solid transparent;">
+                                <h2 style="margin: 10px; text-align: center;">UPC Code: {{item.upc}}</h2>
+                                <img :src="item.image_url"
+                                     @click="state.user2selectedUpc[context.userId] = index"
+                                     style="display: block; width: 100%; object-fit: contain; background: white;"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div v-if="!(context.userId in data.user2upc)">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <div>User with id = {{context.userId}} is not allowed for UPC batches</div>
+                </div>
+
 
                 <el-dialog
                   :visible.sync="state.dialogVisible"
@@ -70,14 +80,24 @@
                 <br/>
                 <br/>
                 <br/>
-                <pre>{{ data.user2upcIndex2Info[context.userId][state.user2selectedUpc[context.userId]] }}</pre>
+                <div v-if="context.userId in data.user2upc">
+                    <pre>{{ data.user2upcIndex2Info[context.userId][state.user2selectedUpc[context.userId]] }}</pre>
+                </div>
+                <div v-if="!(context.userId in data.user2upc)">
+                    <div>User with id = {{context.userId}} is not allowed for UPC batches</div>
+                </div>
             </el-tab-pane>
             <el-tab-pane label="UPC Gallery">
                 <br/>
                 <br/>
                 <br/>
-                <sly-gallery height="300px" :auto-reset="true" :content="data.user2upcIndex2upcGallery[context.userId][state.user2selectedUpc[context.userId]]"/>
-    <!--            <sly-gallery :content="data.demoGallery"/>-->
+                <div v-if="context.userId in data.user2upc">
+                    <sly-gallery height="300px" :auto-reset="true" :content="data.user2upcIndex2upcGallery[context.userId][state.user2selectedUpc[context.userId]]"/>
+                </div>
+                <div v-if="!(context.userId in data.user2upc)">
+                    <div>User with id = {{context.userId}} is not allowed for UPC batches</div>
+                </div>
+
             </el-tab-pane>
             <el-tab-pane label="Search">
                 <br/><br/><br/>
@@ -159,7 +179,7 @@
 <!--            </el-tab-pane>-->
         </el-tabs>
     </div>
-    <div v-if="!(context.userId in data.user2upc)">
-        <div>User with id = {{context.userId}} is not allowed for this app</div>
-    </div>
+<!--    <div v-if="!(context.userId in data.user2upc)">-->
+<!--        <div>User with id = {{context.userId}} is not allowed for this app</div>-->
+<!--    </div>-->
 </div>
