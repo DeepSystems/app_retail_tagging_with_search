@@ -399,7 +399,7 @@ def main():
         "demoGallery": [["https://i.imgur.com/llPpFm0.jpeg"]],
         "fullCatalog": full_catalog,
         "upcGallery": upc_gallery,
-        "user2figureUpc": user2figureUpc
+        "user2figureUpc": user2figureUpc,
     }
 
     state = {
@@ -409,7 +409,8 @@ def main():
         "searching": False,
         "perPage": 10,
         "pageSizes": [5, 10, 20],
-        "user2selectedRowData": user2selectedRowData
+        "user2selectedRowData": user2selectedRowData,
+        "selectedTab": "Catalog"
     }
 
     # # start event after successful service run

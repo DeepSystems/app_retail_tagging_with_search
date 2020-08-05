@@ -10,7 +10,7 @@
             }
         </sly-style>
 
-        <el-tabs type="card">
+        <el-tabs type="card" v-model="state.selectedTab">
             <el-tab-pane label="Catalog">
                 <div v-if="context.userId in data.user2upc">
                     <div style="position: fixed; background: white; width: 100%; padding: 8px 0; margin-top: 42px;">
@@ -81,7 +81,10 @@
                 <br/>
                 <br/>
                 <div v-if="context.userId in data.user2upc">
-                    <sly-gallery height="300px" :auto-reset="true" :content="data.user2upcIndex2upcGallery[context.userId][state.user2selectedUpc[context.userId]]"/>
+                    <sly-gallery height="300px"
+                                 :auto-reset="true"
+                                 v-if="state.selectedTab === '2'"
+                                 :content="data.user2upcIndex2upcGallery[context.userId][state.user2selectedUpc[context.userId]]"/>
                 </div>
                 <div v-if="!(context.userId in data.user2upc)">
                     <div>User with id = {{context.userId}} is not allowed for UPC batches</div>
@@ -122,7 +125,9 @@
                         Multi assign
                     </el-button>
                 </div>
-                <sly-gallery height="300px" :auto-reset="true"
+                <sly-gallery height="300px"
+                             :auto-reset="true"
+                             v-if="state.selectedTab === '4'"
                              :content="data.upcGallery[state.user2selectedRowData[context.userId]['UPC CODE']]"/>
             </el-tab-pane>
             <el-tab-pane label="Review">
@@ -150,15 +155,17 @@
                         <i class="zmdi zmdi-alert-circle"/> Error
                     </el-button>
                 </div>
-                <sly-gallery height="300px" :auto-reset="true"
+                <sly-gallery height="300px"
+                             :auto-reset="true"
+                             v-if="state.selectedTab === '5'"
                              :content="data.upcGallery[data.user2figureUpc[context.userId]]">
                 </sly-gallery>
             </el-tab-pane>
 <!--            <el-tab-pane label="Debug">-->
 <!--                <br/><br/><br/>-->
-<!--                <pre>{{ context.userId }}</pre>-->
-<!--                <pre>{{ data.user2figureUpc[context.userId] }}</pre>-->
-<!--                <pre>{{ data.upcGallery[data.user2figureUpc[context.userId]] }}</pre>-->
+<!--                <br/><br/>-->
+<!--                <pre>{{ state.selectedTab }}</pre>-->
+<!--                <pre>{{ context }}</pre>-->
 <!--            </el-tab-pane>-->
         </el-tabs>
     </div>
