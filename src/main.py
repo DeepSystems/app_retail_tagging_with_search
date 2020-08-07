@@ -208,7 +208,6 @@ def _assign_tag(api, context, selected_upc, tag_name=None):
     if tag_name is None:
         tag_name = TAG_NAME
     tag_meta = meta.get_tag_meta(tag_name)
-    #api.advanced.add_tag_to_object(tag_meta.sly_id, active_figure_id, value=selected_upc)
     add_tag_to_object(api, meta, active_figure_id, tag_meta.sly_id, selected_upc)
 
 @my_app.callback("assign_tag")
@@ -248,8 +247,6 @@ def _multi_assign_tag(api, context, selected_upc):
     tag_meta = meta.get_tag_meta(TAG_NAME)
     for idx, label in enumerate(ann.labels):
         if label.geometry.to_bbox().intersects_with(selected_label.geometry.to_bbox()):
-            #api.advanced.remove_tag_from_object(tag_meta.sly_id, label.geometry.sly_id)
-            #api.advanced.add_tag_to_object(tag_meta.sly_id, label.geometry.sly_id, value=selected_upc)
             add_tag_to_object(api, meta, label.geometry.sly_id, tag_meta.sly_id, selected_upc)
 
 @my_app.callback("multi_assign_tag")
@@ -297,6 +294,10 @@ def init_user_2_upc(api, team_id):
 
     global user2upc, upc_gallery
 
+    for upc, urls in upc_url.items():
+        for url in urls:
+            upc_gallery[upc].append([url])
+
     for user, upc_batches in user_upc_batch.items():
         user_info = api.user.get_member_info_by_login(team_id, user)
         if user_info is None:
@@ -306,7 +307,6 @@ def init_user_2_upc(api, team_id):
             for upc_code in upc_batch[str(batch_id)]["upcs"]:
                 first_url = True
                 for url in upc_url[upc_code]:
-                    upc_gallery[upc_code].append([url])
                     if "_full" in url:
                         continue
                     if first_url is False:
@@ -320,7 +320,6 @@ def init_catalog():
     catalog = sheets[list(sheets.keys())[0]]  # get first sheet from excel
     sly.logger.info("Size of catalog: {}".format(len(catalog)))
     upcs = list(catalog["UPC CODE"])
-    # upc = '7861042566762'
     for upc in upcs:
         res = catalog[catalog['UPC CODE'] == np.int64(upc)]
         info = json.loads(res.to_json(orient="records"))
@@ -335,7 +334,6 @@ def init_search_catalog():
     global full_catalog
     global upc_gallery
 
-    popover_id = 1
     for upc_int64, info in upc2catalog.items():
         link = None
         if str(upc_int64) in upc_gallery:
@@ -386,12 +384,6 @@ def main():
         user2selectedRowData[str(m.id)] = full_catalog[0]
         user2figureUpc[str(m.id)] = None
 
-    # user2selectedRowData = {}
-    # user2figureUpc = {}
-    # for key, _ in user2upc.items():
-    #     user2selectedRowData[key] = full_catalog[0]
-    #     user2figureUpc[key] = None
-
     data = {
         "user2upc": user2upc,
         "user2upcIndex2Info": user2upcIndex2Info,
@@ -410,7 +402,7 @@ def main():
         "perPage": 10,
         "pageSizes": [5, 10, 20],
         "user2selectedRowData": user2selectedRowData,
-        "selectedTab": "Catalog"
+        "selectedTab": "1"
     }
 
     # # start event after successful service run
