@@ -157,7 +157,7 @@
                 </div>
                 <sly-gallery height="300px"
                              :auto-reset="true"
-                             v-if="state.selectedTab === '5'"
+                             v-if="state.selectedTab === '5' && data.upcGallery[data.user2figureUpc[context.userId]]"
                              :content="data.upcGallery[data.user2figureUpc[context.userId]]">
                 </sly-gallery>
             </el-tab-pane>
